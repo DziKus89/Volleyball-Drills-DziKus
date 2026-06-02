@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0a0f">
+<title>Volleyball Drills</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #13131c;
+  --bg3: #1c1c28;
+  --accent: #e8ff3c;
+  --accent2: #ff3c6e;
+  --text: #f0f0f5;
+  --muted: #7a7a99;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.15);
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* noise overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: .5;
+}
+
+.wrap { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 16px 80px; }
+
+/* ── HEADER ── */
+header {
+  padding: 32px 0 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.logo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.logo-tag {
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.logo h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 44px;
+  line-height: 1;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+.logo h1 span { color: var(--accent); }
+.yt-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 20px;
+}
+.yt-badge svg { width: 16px; height: 16px; }
+
+/* ── API KEY BOX ── */
+.api-section {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 24px;
+  transition: border-color .2s;
+}
+.api-section.saved { border-color: rgba(232,255,60,0.3); }
+.api-section label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.key-row { display: flex; gap: 8px; }
+.key-row input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color .2s;
+  min-width: 0;
+}
+.key-row input::placeholder { color: var(--muted); }
+.key-row input:focus { border-color: var(--accent); }
+.btn-save {
+  background: var(--accent);
+  color: #0a0a0f;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 16px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity .15s, transform .1s;
+}
+.btn-save:hover { opacity: .88; }
+.btn-save:active { transform: scale(.97); }
+.api-status {
+  font-size: 12px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.api-status.ok { color: var(--accent); }
+.api-status.err { color: var(--accent2); }
+.api-status:empty { display: none; }
+.api-hint {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.api-hint a { color: var(--accent); text-decoration: none; }
+.api-hint a:hover { text-decoration: underline; }
+
+/* ── FILTER SECTIONS ── */
+.filter-block { margin-bottom: 20px; }
+.filter-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 500;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.filter-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.chips { display: flex; flex-wrap: wrap; gap: 7px; }
+.chip {
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 400;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.chip:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
+.chip.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0a0a0f;
+  font-weight: 500;
+}
+.chip.on.red {
+  background: var(--accent2);
+  border-color: var(--accent2);
+}
+
+/* ── GENERATE BUTTON ── */
+.gen-wrap { margin: 28px 0; }
+.btn-gen {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: #0a0a0f;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: opacity .15s, transform .1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-gen:hover { opacity: .9; }
+.btn-gen:active { transform: scale(.99); }
+.btn-gen:disabled { opacity: .35; cursor: not-allowed; transform: none; }
+.btn-gen svg { width: 22px; height: 22px; }
+
+/* ── RESULTS ── */
+.results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.results-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: var(--text);
+}
+.results-count {
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.results { display: flex; flex-direction: column; gap: 14px; }
+
+/* ── DRILL CARD ── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color .2s, transform .15s;
+  animation: fadeUp .3s ease both;
+}
+.card:hover { border-color: var(--border2); }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card:nth-child(1) { animation-delay: .05s; }
+.card:nth-child(2) { animation-delay: .1s; }
+.card:nth-child(3) { animation-delay: .15s; }
+.card:nth-child(4) { animation-delay: .2s; }
+.card:nth-child(5) { animation-delay: .25s; }
+
+.thumb {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%;
+  background: var(--bg3);
+  cursor: pointer;
+  overflow: hidden;
+}
+.thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .3s;
+}
+.thumb:hover img { transform: scale(1.03); }
+.thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10,10,15,.7) 0%, transparent 50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.play-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(232,255,60,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform .15s, background .15s;
+}
+.thumb:hover .play-btn { transform: scale(1.08); background: var(--accent); }
+.play-btn svg { width: 22px; height: 22px; margin-left: 3px; }
+
+.card-body { padding: 14px 16px 12px; }
+.card-title {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text);
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.card-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.card-meta .channel {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.card-meta .channel svg { width: 14px; height: 14px; color: #ff3c3c; flex-shrink: 0; }
+.card-meta .dot { color: var(--border2); }
+.card-meta .date { font-size: 11px; }
+
+.card-actions { display: flex; gap: 8px; padding: 0 16px 14px; }
+.btn-watch {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 14px;
+  background: var(--accent2);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity .15s;
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+}
+.btn-watch svg { width: 16px; height: 16px; flex-shrink: 0; }
+.btn-watch:hover { opacity: .88; }
+
+.btn-swap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--bg3);
+  color: var(--muted);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-swap svg { width: 15px; height: 15px; transition: transform .4s; }
+.btn-swap:hover { background: var(--bg); color: var(--text); border-color: rgba(255,255,255,0.25); }
+.btn-swap:hover svg { transform: rotate(180deg); }
+.btn-swap:disabled { opacity: .4; cursor: not-allowed; }
+.btn-swap:disabled svg { animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── EMPTY / LOADING STATE ── */
+.state-box {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--muted);
+}
+.state-box svg {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 14px;
+  display: block;
+  opacity: .4;
+}
+.state-box p { font-size: 14px; line-height: 1.6; }
+.state-box strong { color: var(--text); font-weight: 500; }
+
+/* ── LOADING SKELETON ── */
+.skeleton { display: flex; flex-direction: column; gap: 14px; }
+.skel-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+.skel-thumb { width: 100%; padding-bottom: 56.25%; background: var(--bg3); }
+.skel-body { padding: 14px 16px; }
+.skel-line { height: 13px; background: var(--bg3); border-radius: 4px; margin-bottom: 8px; }
+.skel-line.w80 { width: 80%; }
+.skel-line.w55 { width: 55%; }
+.skel-line.w40 { width: 40%; }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .6; }
+}
+
+/* ── QUOTA FOOTER ── */
+.quota-bar {
+  margin-top: 20px;
+  padding: 12px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+}
+.quota-bar span { display: flex; align-items: center; gap: 5px; }
+.quota-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <span class="logo-tag">Women's Training</span>
+      <h1>Volley<span>Drills</span></h1>
+    </div>
+    <div class="yt-badge">
+      <svg viewBox="0 0 24 24" fill="#ff3c3c"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.8z"/><polygon fill="#fff" points="9.75,15.02 15.5,12 9.75,8.98"/></svg>
+      Live API
+    </div>
+  </header>
+
+  <!-- API KEY -->
+  <div class="api-section" id="api-section">
+    <label>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+      Klucz YouTube Data API v3
+    </label>
+    <div class="key-row">
+      <input type="password" id="api-key" placeholder="AIzaSy..." autocomplete="off" />
+      <button class="btn-save" onclick="saveKey()">Zapisz</button>
+    </div>
+    <div class="api-status" id="api-status"></div>
+    <p class="api-hint">
+      Brak klucza? <a href="https://console.cloud.google.com" target="_blank" rel="noopener">console.cloud.google.com</a> → Interfejsy API → YouTube Data API v3 → Dane logowania → Utwórz klucz API
+    </p>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-block">
+    <div class="filter-label">Kategoria</div>
+    <div class="chips" id="g-cat">
+      <button class="chip on red" data-g="cat" data-v="attack">Atak</button>
+      <button class="chip" data-g="cat" data-v="defense">Obrona</button>
+      <button class="chip" data-g="cat" data-v="serve">Zagrywka</button>
+      <button class="chip" data-g="cat" data-v="setting">Rozegranie</button>
+      <button class="chip" data-g="cat" data-v="block">Blok</button>
+      <button class="chip" data-g="cat" data-v="conditioning">Kondycja</button>
+    </div>
+  </div>
+
+  <div class="filter-block">
+    <div class="filter-label">Pozycja</div>
+    <div class="chips" id="g-pos">
+      <button class="chip on" data-g="pos" data-v="all">Cały zespół</button>
+      <button class="chip" data-g="pos" data-v="outside">Atakujący zewn.</button>
+      <button class="chip" data-g="pos" data-v="opposite">Atakujący śr.</button>
+      <button class="chip" data-g="pos" data-v="libero">Libero</button>
+      <button class="chip" data-g="pos" data-v="setter">Rozgrywający</button>
+      <button class="chip" data-g="pos" data-v="middle">Środkowy</button>
+    </div>
+  </div>
+
+  <div class="filter-block">
+    <div class="filter-label">Poziom</div>
+    <div class="chips" id="g-lvl">
+      <button class="chip on" data-g="lvl" data-v="beginner">Początkujący</button>
+      <button class="chip" data-g="lvl" data-v="intermediate">Średni</button>
+      <button class="chip" data-g="lvl" data-v="advanced">Zaawansowany</button>
+    </div>
+  </div>
+
+  <!-- GENERATE -->
+  <div class="gen-wrap">
+    <button class="btn-gen" id="gen-btn" onclick="generate()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Szukaj ćwiczeń
+    </button>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results-wrap" style="display:none">
+    <div class="results-header">
+      <span class="results-title">Wyniki</span>
+      <span class="results-count" id="res-count">5 ćwiczeń</span>
+    </div>
+    <div id="results" class="results"></div>
+    <div class="quota-bar" id="quota-bar" style="display:none">
+      <span><span class="quota-dot"></span>Live · YouTube Data API v3</span>
+      <span id="quota-used">~100 jedn. limitu użyte</span>
+    </div>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div id="empty-state" class="state-box">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+    </svg>
+    <p>Wybierz filtry i kliknij<br><strong>Szukaj ćwiczeń</strong></p>
+  </div>
+
+</div>
+
+<script>
+const S = { cat: 'attack', pos: 'all', lvl: 'beginner' };
+let apiKey = '';
+let lastQuery = '';
+let lastPageToken = '';
+let resultPool = [];
+let usedIds = new Set();
+let queryCount = 0;
+
+const QUERIES = {
+  attack: {
+    all: 'women volleyball attack drill team training',
+    outside: 'outside hitter spike approach drill volleyball women',
+    opposite: 'opposite hitter attack drill volleyball training',
+    libero: 'libero back row attack coverage volleyball',
+    setter: 'setter dump attack quick set volleyball',
+    middle: 'middle hitter quick attack tempo volleyball drill'
+  },
+  defense: {
+    all: 'women volleyball defense digging drill team training',
+    outside: 'outside hitter defense transition volleyball drill',
+    opposite: 'back row defense opposite hitter volleyball',
+    libero: 'libero digging passing drill volleyball women training',
+    setter: 'setter defensive positioning transition volleyball',
+    middle: 'middle blocker block footwork read volleyball'
+  },
+  serve: {
+    all: 'volleyball serve drill women team jump float training',
+    outside: 'serve receive platform volleyball outside hitter',
+    opposite: 'serve receive back row opposite volleyball drill',
+    libero: 'libero serve receive passing drill volleyball women',
+    setter: 'setter positioning serve receive volleyball',
+    middle: 'middle blocker serve receive volleyball drill'
+  },
+  setting: {
+    all: 'volleyball setting drill women team training technique',
+    outside: 'high ball setting outside attack volleyball drill',
+    opposite: 'back set opposite hitter volleyball training',
+    libero: 'setting drill libero back set volleyball',
+    setter: 'setter footwork hand technique volleyball women training',
+    middle: 'quick set middle blocker tempo volleyball drill'
+  },
+  block: {
+    all: 'women volleyball blocking drill team training',
+    outside: 'outside blocker footwork read volleyball drill',
+    opposite: 'opposite blocker attack coverage volleyball',
+    libero: 'libero block shadow movement volleyball training',
+    setter: 'setter block transition volleyball drill',
+    middle: 'middle blocker read block timing volleyball drill'
+  },
+  conditioning: {
+    all: 'volleyball conditioning fitness training women team',
+    outside: 'outside hitter jump explosive power volleyball training',
+    opposite: 'opposite hitter strength power volleyball conditioning',
+    libero: 'libero agility reaction speed training volleyball',
+    setter: 'setter footwork agility volleyball conditioning',
+    middle: 'middle blocker vertical jump training volleyball'
+  }
+};
+const LVL = { beginner: 'beginner basic', intermediate: 'intermediate', advanced: 'advanced elite' };
+
+function buildQuery() {
+  const base = (QUERIES[S.cat] || QUERIES.attack)[S.pos] || (QUERIES[S.cat] || QUERIES.attack).all;
+  return base + ' ' + (LVL[S.lvl] || '');
+}
+
+function saveKey() {
+  const v = document.getElementById('api-key').value.trim();
+  if (!v) { setStatus('Wpisz klucz API', 'err'); return; }
+  apiKey = v;
+  localStorage.setItem('vd_key', v);
+  setStatus('✓ Klucz zapisany · gotowy', 'ok');
+  document.getElementById('api-section').classList.add('saved');
+}
+function setStatus(msg, type) {
+  const el = document.getElementById('api-status');
+  el.textContent = msg;
+  el.className = 'api-status ' + (type || '');
+}
+
+async function ytSearch(query, pageToken = '') {
+  const params = new URLSearchParams({
+    part: 'snippet',
+    q: query,
+    type: 'video',
+    videoDuration: 'medium',
+    relevanceLanguage: 'en',
+    maxResults: 10,
+    key: apiKey
+  });
+  if (pageToken) params.set('pageToken', pageToken);
+  const res = await fetch('https://www.googleapis.com/youtube/v3/search?' + params);
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message || 'Błąd API (' + res.status + ')');
+  }
+  queryCount++;
+  return res.json();
+}
+
+function showSkeleton() {
+  document.getElementById('results-wrap').style.display = 'block';
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('results').innerHTML = `
+    <div class="skeleton">
+      ${[1,2,3,4,5].map(() => `
+        <div class="skel-card">
+          <div class="skel-thumb"></div>
+          <div class="skel-body">
+            <div class="skel-line w80"></div>
+            <div class="skel-line w55"></div>
+            <div class="skel-line w40"></div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+async function generate() {
+  if (!apiKey) { setStatus('Najpierw wpisz i zapisz klucz API', 'err'); return; }
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="animation:spin .7s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Szukam...`;
+
+  showSkeleton();
+  lastQuery = buildQuery();
+  lastPageToken = '';
+  resultPool = [];
+  usedIds = new Set();
+
+  try {
+    const data = await ytSearch(lastQuery);
+    lastPageToken = data.nextPageToken || '';
+    resultPool = (data.items || []).filter(i => i.id && i.id.videoId);
+    const toShow = resultPool.slice(0, 5);
+    toShow.forEach(i => usedIds.add(i.id.videoId));
+    renderCards(toShow);
+    document.getElementById('quota-bar').style.display = 'flex';
+    document.getElementById('quota-used').textContent = '~' + (queryCount * 100) + ' jedn. użyte dziś';
+  } catch (e) {
+    document.getElementById('results').innerHTML = `
+      <div class="state-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <p><strong>${e.message}</strong><br>Sprawdź klucz API i spróbuj ponownie.</p>
+      </div>`;
+  }
+  btn.disabled = false;
+  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Generuj ponownie`;
+}
+
+function renderCards(items) {
+  const res = document.getElementById('results');
+  if (!items || !items.length) {
+    res.innerHTML = `<div class="state-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg><p>Brak wyników · spróbuj inne filtry</p></div>`;
+    return;
+  }
+  document.getElementById('res-count').textContent = items.length + ' ćwiczeń';
+  res.innerHTML = items.map((it, i) => cardHTML(it, i)).join('');
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('pl-PL', { year: 'numeric', month: 'short' });
+}
+
+function esc(s) { return s ? s.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;') : ''; }
+
+function cardHTML(item, idx) {
+  const vid = item.id.videoId;
+  const sn = item.snippet || {};
+  const title = esc(sn.title || 'Brak tytułu');
+  const ch = esc(sn.channelTitle || '');
+  const date = fmtDate(sn.publishedAt);
+  const thumb = sn.thumbnails?.medium?.url || sn.thumbnails?.default?.url || '';
+  const ytUrl = 'https://www.youtube.com/watch?v=' + vid;
+  return `
+<div class="card" id="card-${idx}" data-vid="${vid}">
+  <div class="thumb" onclick="openLink('${ytUrl}')" role="button" aria-label="Otwórz na YouTube: ${title}">
+    ${thumb ? `<img src="${thumb}" alt="${title}" loading="lazy">` : ''}
+    <div class="thumb-overlay">
+      <div class="play-btn">
+        <svg viewBox="0 0 24 24" fill="#0a0a0f"><polygon points="5,3 19,12 5,21"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-title">${title}</div>
+    <div class="card-meta">
+      <span class="channel">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75,15.02 15.5,12 9.75,8.98"/></svg>
+        ${ch}
+      </span>
+      ${date ? `<span class="dot">·</span><span class="date">${date}</span>` : ''}
+    </div>
+  </div>
+  <div class="card-actions">
+    <button class="btn-watch" onclick="openLink('${ytUrl}')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.8z"/><polygon fill="white" points="9.75,15.02 15.5,12 9.75,8.98"/></svg>
+      Obejrzyj
+    </button>
+    <button class="btn-swap" id="swap-${idx}" onclick="swapCard(${idx})">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+      Inne
+    </button>
+  </div>
+</div>`;
+}
+
+async function swapCard(idx) {
+  const btn = document.getElementById('swap-' + idx);
+  const card = document.getElementById('card-' + idx);
+  if (!btn || btn.disabled || !card) return;
+  const currentVid = card.dataset.vid;
+  btn.disabled = true;
+
+  const unused = resultPool.filter(it => !usedIds.has(it.id.videoId));
+  if (unused.length > 0) {
+    const pick = unused[Math.floor(Math.random() * unused.length)];
+    usedIds.delete(currentVid);
+    usedIds.add(pick.id.videoId);
+    card.outerHTML = cardHTML(pick, idx);
+    return;
+  }
+
+  try {
+    const q = lastPageToken ? lastQuery : lastQuery + ' training drill tutorial';
+    const data = await ytSearch(q, lastPageToken);
+    lastPageToken = data.nextPageToken || '';
+    document.getElementById('quota-used').textContent = '~' + (queryCount * 100) + ' jedn. użyte dziś';
+    const fresh = (data.items || []).filter(i => i.id && i.id.videoId && !usedIds.has(i.id.videoId) && i.id.videoId !== currentVid);
+    resultPool.push(...fresh);
+    if (fresh.length) {
+      const pick = fresh[0];
+      usedIds.delete(currentVid);
+      usedIds.add(pick.id.videoId);
+      card.outerHTML = cardHTML(pick, idx);
+      return;
+    }
+  } catch (e) {}
+
+  const b = document.getElementById('swap-' + idx);
+  if (b) { b.disabled = false; }
+}
+
+function openLink(url) {
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+
+document.querySelectorAll('.chip').forEach(c => {
+  c.addEventListener('click', () => {
+    const g = c.dataset.g;
+    document.querySelectorAll(`.chip[data-g="${g}"]`).forEach(x => x.classList.remove('on', 'red'));
+    c.classList.add('on');
+    if (g === 'cat') c.classList.add('red');
+    S[g] = c.dataset.v;
+  });
+});
+
+const stored = localStorage.getItem('vd_key');
+if (stored) {
+  apiKey = stored;
+  document.getElementById('api-key').value = stored;
+  document.getElementById('api-section').classList.add('saved');
+  setStatus('✓ Klucz załadowany', 'ok');
+}
+</script>
+
+<footer style="text-align:center;padding:28px 16px 32px;border-top:1px solid rgba(255,255,255,0.06);margin-top:32px">
+  <p style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:3px;color:#7a7a99;text-transform:uppercase">Autor</p>
+  <p style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:#e8ff3c;margin-top:4px">Patryk Kuczer</p>
+  <p style="font-size:11px;color:#7a7a99;margin-top:4px;letter-spacing:1px">VolleyDrills &copy; 2026</p>
+</footer>
+
+</body>
+</html>
